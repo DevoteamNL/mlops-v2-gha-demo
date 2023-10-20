@@ -12,6 +12,15 @@ jobs:
     needs: get-config
     runs-on: ubuntu-latest
     steps:
+    - name: "Az CLI login"
+      uses: azure/login@v1
+      with:
+        creds: ${{secrets.AZURE_CREDENTIALS}}
+        enable-AzPSSession: true
+    - name: install-extension
+      run: az extension add -n ml -y
+    - name: update-extension
+      run: az extension update -n ml
     - id: get-ml-endpoint
       name: get-ml-endpoint
       run: | 
