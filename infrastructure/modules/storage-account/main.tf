@@ -1,9 +1,3 @@
-data "azurerm_client_config" "current" {}
-
-data "http" "ip" {
-  url = "https://ifconfig.me"
-}
-
 locals {
   safe_prefix  = replace(var.prefix, "-", "")
   safe_postfix = replace(var.postfix, "-", "")

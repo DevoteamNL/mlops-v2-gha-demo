@@ -65,6 +65,8 @@ module "key_vault" {
   prefix  = var.prefix
   postfix = var.postfix
   env = var.environment
+  object_id = data.azurerm_client_config.current.object_id
+  tenant_id = data.azurerm_client_config.current.tenant_id
 
   tags = local.tags
 }
@@ -110,6 +112,8 @@ module "data_explorer" {
   env = var.environment
   key_vault_id      = module.key_vault.id
   enable_monitoring = var.enable_monitoring
+  client_id = data.azurerm_client_config.current.client_id
+  tenant_id = data.azurerm_client_config.current.tenant_id
 
   client_secret = var.client_secret
 

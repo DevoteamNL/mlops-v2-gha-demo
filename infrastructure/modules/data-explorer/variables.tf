@@ -43,3 +43,11 @@ variable "client_secret" {
   description = "client secret"
   default     = false
 }
+
+variable "client_id" {
+  description = "client id"
+}
+
+variable "tenant_id" {
+  description = "Tenant id"
+}

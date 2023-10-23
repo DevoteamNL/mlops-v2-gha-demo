@@ -28,3 +28,11 @@ variable "env" {
   type        = string
   description = "Environment prefix"
 }
+
+variable "object_id" {
+  description = "Object id"
+}
+
+variable "tenant_id" {
+  description = "Tenant id"
+}

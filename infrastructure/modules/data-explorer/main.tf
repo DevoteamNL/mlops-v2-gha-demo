@@ -1,5 +1,3 @@
-data "azurerm_client_config" "current" {}
-
 resource "azurerm_kusto_cluster" "cluster" {
   name                = "adx${var.prefix}${var.postfix}${var.env}"
   location            = var.location
@@ -25,7 +23,7 @@ resource "azurerm_kusto_database" "database" {
 
 resource "azurerm_key_vault_secret" "SP_ID" {
   name         = "kvmonitoringspid"
-  value        = data.azurerm_client_config.current.client_id
+  value        = var.client_id
   key_vault_id = var.key_vault_id
   count               = var.enable_monitoring ? 1 : 0
 }
@@ -39,7 +37,7 @@ resource "azurerm_key_vault_secret" "SP_KEY" {
 
 resource "azurerm_key_vault_secret" "SP_TENANT_ID" {
   name         = "kvmonitoringadxtenantid"
-  value        = data.azurerm_client_config.current.tenant_id
+  value        = var.tenant_id
   key_vault_id = var.key_vault_id
   count               = var.enable_monitoring ? 1 : 0
 }
