@@ -24,9 +24,9 @@ jobs:
     - id: get-ml-endpoint
       name: get-ml-endpoint
       run: | 
-        $endpoint=`az ml online-endpoint show --n ${{ format('taxi{0}', needs.get-config.outputs.oep) }} -g ${{ needs.get-config.outputs.resource_group }} -w ${{ needs.get-config.outputs.aml_workspace }} --query name`
+        $endpoint=(az ml online-endpoint show --n ${{ format('taxi{0}', needs.get-config.outputs.oep) }} -g ${{ needs.get-config.outputs.resource_group }} -w ${{ needs.get-config.outputs.aml_workspace }} --query name)
 
-        echo $endpoint
+        echo "$endpoint"
 
         if [[ $endpoint -eq ${{ format('taxi{0}', needs.get-config.outputs.oep) }} ]]
         then 
