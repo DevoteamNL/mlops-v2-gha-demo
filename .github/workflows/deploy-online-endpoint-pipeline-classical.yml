@@ -28,7 +28,7 @@ jobs:
 
         echo "$endpoint"
 
-        if [[ $endpoint -eq ${{ format('taxi{0}', needs.get-config.outputs.oep) }} ]]
+        if [[ $endpoint = "${{ format('taxi{0}', needs.get-config.outputs.oep) }}" ]]
         then 
           echo "same"
         else
