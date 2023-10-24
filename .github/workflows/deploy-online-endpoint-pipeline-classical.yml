@@ -27,6 +27,7 @@ jobs:
         endpoint="`az ml online-endpoint show --n ${{ format('taxi{0}', needs.get-config.outputs.oep) }} -g ${{ needs.get-config.outputs.resource_group }} -w ${{ needs.get-config.outputs.aml_workspace }} --query name`"
 
         echo "$endpoint"
+        echo "${{ format('taxi{0}', needs.get-config.outputs.oep) }}"
 
         if [[ $endpoint = "${{ format('taxi{0}', needs.get-config.outputs.oep) }}" ]]
         then 
