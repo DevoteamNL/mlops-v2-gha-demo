@@ -52,7 +52,7 @@ jobs:
   # TODO: Update if exists else create
   create-endpoint:
       needs: [get-config, get-endpoint]
-      if: ${{ needs.get-endpoint.outputs.ml_enpoint == format('taxi{0}', needs.get-config.outputs.oep) }}
+      if: ${{ needs.get-endpoint.outputs.ml_enpoint != format('taxi{0}', needs.get-config.outputs.oep) }}
       uses: Azure/mlops-templates/.github/workflows/create-endpoint.yml@main
       with:
         resource_group: ${{ needs.get-config.outputs.resource_group }}
@@ -62,7 +62,7 @@ jobs:
         endpoint_type: online
       secrets:
         creds: ${{secrets.AZURE_CREDENTIALS}}
-        
+
 # # TODO: Update if exists else create
 #   create-deployment:
 #       uses: Azure/mlops-templates/.github/workflows/create-deployment.yml@main
