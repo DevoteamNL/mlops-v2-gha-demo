@@ -31,7 +31,7 @@ jobs:
       
         check_endpoint=$(az ml online-endpoint show --n ${{ format('taxi{0}', needs.get-config.outputs.oep) }} -g ${{ needs.get-config.outputs.resource_group }} -w ${{ needs.get-config.outputs.aml_workspace }} --query name)
         echo "CHECK_ENPOINT=$check_endpoint" >> $GITHUB_OUTPUT
-        name_point=${{ env.name_enpoint }})
+        name_point=${{ env.name_enpoint }}
 
         echo $name_point
         echo $check_endpoint
