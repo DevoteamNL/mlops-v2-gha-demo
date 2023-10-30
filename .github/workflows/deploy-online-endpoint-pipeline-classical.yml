@@ -33,9 +33,9 @@ jobs:
         echo "CHECK_ENPOINT=$check_endpoint" >> $GITHUB_OUTPUT
 
         echo ${{ env.name_enpoint }}
-        echo "$check_endpoint"
+        echo "${check_endpoint}"
 
-        if [ env.name_enpoint  == $check_endpoint ]
+        if [ ${{ env.name_enpoint }}  == "${check_endpoint}" ]
         then 
            echo "same"
         else
