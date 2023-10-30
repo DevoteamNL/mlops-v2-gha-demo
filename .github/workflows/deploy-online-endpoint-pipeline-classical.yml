@@ -33,10 +33,10 @@ jobs:
         echo "CHECK_ENPOINT=$check_endpoint" >> $GITHUB_OUTPUT
         name_point=${{ env.name_enpoint }}
 
-        echo $name_point
+        echo "$name_point"
         echo $check_endpoint
 
-        if [[ "$name_point" == "$check_endpoint" ]]
+        if [[ "$name_point" == $check_endpoint ]]
         then 
            echo "same"
         else
