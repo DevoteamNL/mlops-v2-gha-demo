@@ -41,7 +41,7 @@ jobs:
   create-endpoint:
       needs: [get-config, get-endpoint]
       runs-on: ubuntu-latest
-      if: needs.get-endpoint.outputs.ml_enpoint != format('taxi{0}', needs.get-config.outputs.oep)
+      if: ${{ needs.get-endpoint.outputs.ml_enpoint }} != format('taxi{0}', needs.get-config.outputs.oep)
       steps:
         - id: test
           name: test
