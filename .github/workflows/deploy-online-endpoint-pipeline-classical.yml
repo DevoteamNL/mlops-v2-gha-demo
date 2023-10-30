@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       check_enpoint: ${{ steps.get-ml-endpoint.outputs.CHECK_ENPOINT }}
-      name_enpoint: ${{ format('taKi{0}', needs.get-config.outputs.oep) }}
+      name_enpoint: ${{ format('taxi{0}', needs.get-config.outputs.oep) }}
     steps:
     - name: "Az CLI login"
       uses: azure/login@v1
@@ -45,7 +45,7 @@ jobs:
 
   # TODO: Update if exists else create
   create-endpoint:
-      if: ${{ needs.get-endpoint.outputs.check_enpoint != needs.get-endpoint.outputs.name_enpoint }}
+      if: ${{ needs.get-endpoint.outputs.check_enpoint != needs.get-endpoint.outputs.check_enpoint }}
       needs: [get-config, get-endpoint]
       runs-on: ubuntu-latest
       steps:
