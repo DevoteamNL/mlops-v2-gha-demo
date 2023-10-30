@@ -8,8 +8,6 @@ jobs:
       with:
         file_name: config-infra-prod.yml
   get-endpoint:
-    env:
-      name_enpoint: ${{ format('taxi{0}', needs.get-config.outputs.oep) }}
     needs: get-config
     runs-on: ubuntu-latest
     outputs:
@@ -28,43 +26,23 @@ jobs:
     - id: get-ml-endpoint
       name: get-ml-endpoint
       run: |
-      
         check_endpoint=$(az ml online-endpoint show --n ${{ format('taxi{0}', needs.get-config.outputs.oep) }} -g ${{ needs.get-config.outputs.resource_group }} -w ${{ needs.get-config.outputs.aml_workspace }} --query name | sed -e 's/^"//' -e 's/"$//')
         echo "CHECK_ENPOINT=$check_endpoint" >> $GITHUB_OUTPUT
-        name_point=${{ env.name_enpoint }}
-
-        echo "$name_point"
-        echo $check_endpoint
-
-        if [[ `eval $name_point` == `eval $check_endpoint` ]]
-        then 
-           echo "same"
-        else
-           echo "not same"
-        fi
 
   # TODO: Update if exists else create
   create-endpoint:
       if: ${{ needs.get-endpoint.outputs.check_enpoint != needs.get-endpoint.outputs.name_enpoint }}
       needs: [get-config, get-endpoint]
-      runs-on: ubuntu-latest
-      steps:
-        - id: test
-          name: test
-          run: | 
-            echo ${{ needs.get-endpoint.outputs.check_enpoint }}
-            echo ${{ needs.get-endpoint.outputs.name_enpoint }}
-        # - id: create-end
-        #   name: create-end
-        #   uses: Azure/mlops-templates/.github/workflows/create-endpoint.yml@main
-        #   with:
-        #     resource_group: ${{ needs.get-config.outputs.resource_group }}
-        #     workspace_name: ${{ needs.get-config.outputs.aml_workspace }}
-        #     endpoint_file: mlops/azureml/deploy/online/online-endpoint.yml
-        #     endpoint_name: ${{ format('taxi{0}', needs.get-config.outputs.oep) }}
-        #     endpoint_type: online
-        #   secrets:
-        #     creds: ${{secrets.AZURE_CREDENTIALS}}
+      name: create-end
+      uses: Azure/mlops-templates/.github/workflows/create-endpoint.yml@main
+      with:
+        resource_group: ${{ needs.get-config.outputs.resource_group }}
+        workspace_name: ${{ needs.get-config.outputs.aml_workspace }}
+        endpoint_file: mlops/azureml/deploy/online/online-endpoint.yml
+        endpoint_name: ${{ format('taxi{0}', needs.get-config.outputs.oep) }}
+        endpoint_type: online
+      secrets:
+        creds: ${{secrets.AZURE_CREDENTIALS}}
 
 # # TODO: Update if exists else create
 #   create-deployment:
