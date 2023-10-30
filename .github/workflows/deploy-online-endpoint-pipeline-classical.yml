@@ -11,7 +11,8 @@ jobs:
     needs: get-config
     runs-on: ubuntu-latest
     outputs:
-      ml_enpoint: ${{ steps.get-ml-endpoint.outputs.ML_ENPOINT }}
+      check_enpoint: ${{ steps.get-ml-endpoint.outputs.CHECK_ENPOINT }}
+      name_enpoint: ${{ steps.get-ml-endpoint.outputs.NAME_ENPOINT }}
     steps:
     - name: "Az CLI login"
       uses: azure/login@v1
@@ -25,10 +26,11 @@ jobs:
     - id: get-ml-endpoint
       name: get-ml-endpoint
       run: | 
-        echo "ML_ENPOINT=$(az ml online-endpoint show --n ${{ format('taxi{0}', needs.get-config.outputs.oep) }} -g ${{ needs.get-config.outputs.resource_group }} -w ${{ needs.get-config.outputs.aml_workspace }} --query name)" >> $GITHUB_OUTPUT
+        echo "CHECK_ENPOINT=$(az ml online-endpoint show --n ${{ format('taxi{0}', needs.get-config.outputs.oep) }} -g ${{ needs.get-config.outputs.resource_group }} -w ${{ needs.get-config.outputs.aml_workspace }} --query name)" >> $GITHUB_OUTPUT
+        echo "NAME_ENPOINT=$(${{ format('taxi{0}', needs.get-config.outputs.oep) }})" >> $GITHUB_OUTPUT
 
-        echo $endpoint
-        echo ${{ format('taxi{0}', needs.get-config.outputs.oep) }}
+        echo $CHECK_ENPOINT
+        echo $NAME_ENPOINT
 
         # if [[  format('taxi1234{0}', needs.get-config.outputs.oep == $endpoint }} ]]
         # then 
@@ -41,14 +43,14 @@ jobs:
   create-endpoint:
       needs: [get-config, get-endpoint]
       runs-on: ubuntu-latest
-      if: ${{ needs.get-endpoint.outputs.ml_enpoint }} != format('taxi{0}', needs.get-config.outputs.oep)
+      if: needs.get-endpoint.outputs.check_enpoint != needs.get-endpoint.outputs.name_enpoint
       steps:
         - id: test
           name: test
           run: | 
             echo "ccccccccccccccccccccc"
-            echo ${{ needs.get-endpoint.outputs.ml_enpoint }}
-            echo ${{ format('taxi{0}', needs.get-config.outputs.oep) }}
+            echo ${{ needs.get-endpoint.outputs.check_enpoint }}
+            echo ${{ needs.get-endpoint.outputs.name_enpoint }}
         # - id: create-end
         #   name: create-end
         #   uses: Azure/mlops-templates/.github/workflows/create-endpoint.yml@main
