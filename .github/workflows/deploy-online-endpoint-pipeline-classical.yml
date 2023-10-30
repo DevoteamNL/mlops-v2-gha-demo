@@ -8,11 +8,12 @@ jobs:
       with:
         file_name: config-infra-prod.yml
   get-endpoint:
+    env:
+      name_enpoint: ${{ format('taxi{0}', needs.get-config.outputs.oep) }}
     needs: get-config
     runs-on: ubuntu-latest
     outputs:
       check_enpoint: ${{ steps.get-ml-endpoint.outputs.CHECK_ENPOINT }}
-      name_enpoint: ${{ steps.get-ml-endpoint.outputs.NAME_ENPOINT }}
     steps:
     - name: "Az CLI login"
       uses: azure/login@v1
@@ -27,27 +28,29 @@ jobs:
       name: get-ml-endpoint
       run: | 
         echo "CHECK_ENPOINT=$(az ml online-endpoint show --n ${{ format('taxi{0}', needs.get-config.outputs.oep) }} -g ${{ needs.get-config.outputs.resource_group }} -w ${{ needs.get-config.outputs.aml_workspace }} --query name)" >> $GITHUB_OUTPUT
-        echo "NAME_ENPOINT=${{ format('taxi{0}', needs.get-config.outputs.oep) }}" >> $GITHUB_OUTPUT
 
-        # if [[  format('taxi1234{0}', needs.get-config.outputs.oep == $endpoint }} ]]
-        # then 
-        #   echo "same"
-        # else
-        #   echo "not same"
-        # fi
+        echo "$CHECK_ENPOINT"
+        echo ${{ env.name_enpoint }}
+
+        if [ ${{ env.name_enpoint }} == "$CHECK_ENPOINT" ]
+        then 
+           echo "same"
+        else
+           echo "not same"
+        fi
 
   # TODO: Update if exists else create
-  create-endpoint:
-      needs: [get-config, get-endpoint]
-      runs-on: ubuntu-latest
-      if: needs.get-endpoint.outputs.check_enpoint != ${{ needs.get-endpoint.outputs.name_enpoint }}
-      steps:
-        - id: test
-          name: test
-          run: | 
-            echo "ccccccccccccccccccccc"
-            echo ${{ needs.get-endpoint.outputs.check_enpoint }}
-            echo ${{ needs.get-endpoint.outputs.name_enpoint }}
+  # create-endpoint:
+  #     needs: [get-config, get-endpoint]
+  #     runs-on: ubuntu-latest
+  #     if: needs.get-endpoint.outputs.check_enpoint != ${{ needs.get-endpoint.outputs.name_enpoint }}
+  #     steps:
+  #       - id: test
+  #         name: test
+  #         run: | 
+  #           echo "ccccccccccccccccccccc"
+  #           echo ${{ needs.get-endpoint.outputs.check_enpoint }}
+  #           echo ${{ needs.get-endpoint.outputs.name_enpoint }}
         # - id: create-end
         #   name: create-end
         #   uses: Azure/mlops-templates/.github/workflows/create-endpoint.yml@main
