@@ -35,7 +35,7 @@ jobs:
         echo ${{ env.name_enpoint }}
         echo "$check_endpoint"
 
-        if [ ${{ env.name_enpoint }} == '$check_endpoint' ]
+        if [ env.name_enpoint  == '$check_endpoint' ]
         then 
            echo "same"
         else
@@ -46,7 +46,7 @@ jobs:
   create-endpoint:
       needs: [get-config, get-endpoint]
       runs-on: ubuntu-latest
-      if: ${{ needs.get-endpoint.outputs.check_enpoint }} != ${{ needs.get-endpoint.outputs.name_enpoint }}
+      if: needs.get-endpoint.outputs.check_enpoint  != ${{ needs.get-endpoint.outputs.name_enpoint }}
       steps:
         - id: test
           name: test
