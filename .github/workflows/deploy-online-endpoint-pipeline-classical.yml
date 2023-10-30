@@ -7,7 +7,6 @@ jobs:
       uses: Azure/mlops-templates/.github/workflows/read-yaml.yml@main
       with:
         file_name: config-infra-prod.yml
-
   get-endpoint:
     needs: get-config
     runs-on: ubuntu-latest
@@ -37,26 +36,30 @@ jobs:
         else
           echo "not same"
         fi
-    - id: test
-      name: test
-      run: | 
-        echo "ccccccccccccccccccccc"
-        echo ${{ steps.get-ml-endpoint.outputs.ml_enpoint }}
-        echo ${{ format('taxi{0}', needs.get-config.outputs.oep) }}
 
   # TODO: Update if exists else create
   create-endpoint:
       needs: [get-config, get-endpoint]
+      runs-on: ubuntu-latest
       if: ${{ needs.get-endpoint.outputs.ml_enpoint != format('taxi{0}', needs.get-config.outputs.oep) }}
-      uses: Azure/mlops-templates/.github/workflows/create-endpoint.yml@main
-      with:
-        resource_group: ${{ needs.get-config.outputs.resource_group }}
-        workspace_name: ${{ needs.get-config.outputs.aml_workspace }}
-        endpoint_file: mlops/azureml/deploy/online/online-endpoint.yml
-        endpoint_name: ${{ format('taxi{0}', needs.get-config.outputs.oep) }}
-        endpoint_type: online
-      secrets:
-        creds: ${{secrets.AZURE_CREDENTIALS}}
+      steps:
+        - id: test
+          name: test
+          run: | 
+            echo "ccccccccccccccccccccc"
+            echo ${{ needs.get-endpoint.outputs.ml_enpoint }}
+            echo ${{ format('taxi{0}', needs.get-config.outputs.oep) }}
+        # - id: create-end
+        #   name: create-end
+        #   uses: Azure/mlops-templates/.github/workflows/create-endpoint.yml@main
+        #   with:
+        #     resource_group: ${{ needs.get-config.outputs.resource_group }}
+        #     workspace_name: ${{ needs.get-config.outputs.aml_workspace }}
+        #     endpoint_file: mlops/azureml/deploy/online/online-endpoint.yml
+        #     endpoint_name: ${{ format('taxi{0}', needs.get-config.outputs.oep) }}
+        #     endpoint_type: online
+        #   secrets:
+        #     creds: ${{secrets.AZURE_CREDENTIALS}}
 
 # # TODO: Update if exists else create
 #   create-deployment:
