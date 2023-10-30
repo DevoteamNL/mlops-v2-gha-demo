@@ -44,7 +44,7 @@ jobs:
 
   # TODO: Update if exists else create
   create-endpoint:
-      if: needs.get-endpoint.outputs.check_enpoint != needs.get-endpoint.outputs.name_enpoint
+      if: ${{ needs.get-endpoint.outputs.check_enpoint }} != ${{ needs.get-endpoint.outputs.name_enpoint }}
       needs: [get-config, get-endpoint]
       runs-on: ubuntu-latest
       steps:
