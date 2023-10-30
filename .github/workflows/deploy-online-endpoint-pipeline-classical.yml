@@ -29,7 +29,7 @@ jobs:
       name: get-ml-endpoint
       run: |
       
-        check_endpoint=$(az ml online-endpoint show --n ${{ format('taxi{0}', needs.get-config.outputs.oep) }} -g ${{ needs.get-config.outputs.resource_group }} -w ${{ needs.get-config.outputs.aml_workspace }} --query name)
+        check_endpoint=$(az ml online-endpoint show --n ${{ format('taxi{0}', needs.get-config.outputs.oep) }} -g ${{ needs.get-config.outputs.resource_group }} -w ${{ needs.get-config.outputs.aml_workspace }} --query name | sed -e 's/^"//' -e 's/"$//')
         echo "CHECK_ENPOINT=$check_endpoint" >> $GITHUB_OUTPUT
         name_point=${{ env.name_enpoint }}
 
@@ -52,7 +52,6 @@ jobs:
         - id: test
           name: test
           run: | 
-            echo "ccccccccccccccccccccc"
             echo ${{ needs.get-endpoint.outputs.check_enpoint }}
             echo ${{ needs.get-endpoint.outputs.name_enpoint }}
         # - id: create-end
