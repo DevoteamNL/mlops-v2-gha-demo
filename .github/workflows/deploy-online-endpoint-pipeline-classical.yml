@@ -28,20 +28,20 @@ jobs:
         echo "ML_ENPOINT=$(az ml online-endpoint show --n ${{ format('taxi{0}', needs.get-config.outputs.oep) }} -g ${{ needs.get-config.outputs.resource_group }} -w ${{ needs.get-config.outputs.aml_workspace }} --query name)" >> $GITHUB_OUTPUT
 
         echo $endpoint
-        echo ${{ format('taxi1234{0}', needs.get-config.outputs.oep) }}
+        echo ${{ format('taxi{0}', needs.get-config.outputs.oep) }}
 
-        if [[ ${{ format('taxi1234{0}', needs.get-config.outputs.oep) == '$endpoint' }} ]]
-        then 
-          echo "same"
-        else
-          echo "not same"
-        fi
+        # if [[  format('taxi1234{0}', needs.get-config.outputs.oep == $endpoint }} ]]
+        # then 
+        #   echo "same"
+        # else
+        #   echo "not same"
+        # fi
 
   # TODO: Update if exists else create
   create-endpoint:
       needs: [get-config, get-endpoint]
       runs-on: ubuntu-latest
-      if: ${{ needs.get-endpoint.outputs.ml_enpoint != format('taxi{0}', needs.get-config.outputs.oep) }}
+      if: needs.get-endpoint.outputs.ml_enpoint != format('taxi{0}', needs.get-config.outputs.oep)
       steps:
         - id: test
           name: test
