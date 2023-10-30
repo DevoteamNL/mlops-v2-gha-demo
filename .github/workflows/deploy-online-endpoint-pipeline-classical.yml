@@ -26,13 +26,15 @@ jobs:
       run: az extension update -n ml
     - id: get-ml-endpoint
       name: get-ml-endpoint
-      run: | 
-        echo "CHECK_ENPOINT=$(az ml online-endpoint show --n ${{ format('taxi{0}', needs.get-config.outputs.oep) }} -g ${{ needs.get-config.outputs.resource_group }} -w ${{ needs.get-config.outputs.aml_workspace }} --query name)" >> $GITHUB_OUTPUT
+      run: |
+      
+        check_endpoint=$(az ml online-endpoint show --n ${{ format('taxi{0}', needs.get-config.outputs.oep) }} -g ${{ needs.get-config.outputs.resource_group }} -w ${{ needs.get-config.outputs.aml_workspace }} --query name)
+        echo "CHECK_ENPOINT=$check_endpoint" >> $GITHUB_OUTPUT
 
-        echo "$CHECK_ENPOINT"
         echo ${{ env.name_enpoint }}
+        echo "$check_endpoint"
 
-        if [ ${{ env.name_enpoint }} == "$CHECK_ENPOINT" ]
+        if [ ${{ env.name_enpoint }} == '$check_endpoint' ]
         then 
            echo "same"
         else
