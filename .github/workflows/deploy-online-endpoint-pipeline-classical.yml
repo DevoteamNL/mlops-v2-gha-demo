@@ -36,7 +36,7 @@ jobs:
         echo "$name_point"
         echo $check_endpoint
 
-        if [[ "$name_point" == $check_endpoint ]]
+        if [[ `eval $name_point` == `eval $check_endpoint` ]]
         then 
            echo "same"
         else
