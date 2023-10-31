@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       check_enpoint: ${{ steps.get-ml-endpoint.outputs.CHECK_ENPOINT }}
-      name_enpoint: ${{ format('taxi{0}', needs.get-config.outputs.oep) }}
+      name_enpoint: ${{ format('taksi{0}', needs.get-config.outputs.oep) }}
     steps:
     - name: "Az CLI login"
       uses: azure/login@v1
@@ -40,13 +40,13 @@ jobs:
         #     echo ${{ needs.get-endpoint.outputs.check_enpoint }}
         #     echo ${{ needs.get-endpoint.outputs.name_enpoint }}
       # - id: create-end
-      name: create-end
+      name: create-endpoint
       uses: Azure/mlops-templates/.github/workflows/create-endpoint.yml@main
       with:
         resource_group: ${{ needs.get-config.outputs.resource_group }}
         workspace_name: ${{ needs.get-config.outputs.aml_workspace }}
         endpoint_file: mlops/azureml/deploy/online/online-endpoint.yml
-        endpoint_name: ${{ format('taxi{0}', needs.get-config.outputs.oep) }}
+        endpoint_name: ${{ format('taksi{0}', needs.get-config.outputs.oep) }}
         endpoint_type: online
       secrets:
         creds: ${{secrets.AZURE_CREDENTIALS}}
