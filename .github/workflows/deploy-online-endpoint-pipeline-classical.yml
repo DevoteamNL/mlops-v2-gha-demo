@@ -46,12 +46,10 @@ jobs:
     - id: get-ml-endpoint
       name: get-ml-endpoint
       run: |
-        az ml online-endpoint update --file mlops/azureml/deploy/online/online-endpoint.yml --resource-group ${{ needs.get-config.outputs.resource_group }}
-        --workspace-name ${{ needs.get-config.outputs.aml_workspace }}
+        az ml online-endpoint update -n ${{ format('taxi{0}', needs.get-config.outputs.oep) }}  --file mlops/azureml/deploy/online/online-endpoint.yml --resource-group ${{ needs.get-config.outputs.resource_group }} --workspace-name ${{ needs.get-config.outputs.aml_workspace }}
   create-endpoint:
       if: ${{ needs.get-endpoint.outputs.check_enpoint != needs.get-endpoint.outputs.name_enpoint }}
       needs: [get-config, get-endpoint]
-      name: create-endpoint
       uses: Azure/mlops-templates/.github/workflows/create-endpoint.yml@main
       with:
         resource_group: ${{ needs.get-config.outputs.resource_group }}
@@ -62,26 +60,44 @@ jobs:
       secrets:
         creds: ${{secrets.AZURE_CREDENTIALS}}
 
-# # TODO: Update if exists else create
-  # create-deployment:
-  #     uses: Azure/mlops-templates/.github/workflows/create-deployment.yml@main
-  #     needs: [get-config]
-  #     with:
-  #       resource_group: ${{ needs.get-config.outputs.resource_group }}
-  #       workspace_name: ${{ needs.get-config.outputs.aml_workspace }}
-  #       endpoint_file: mlops/azureml/deploy/online/online-deployment.yml
-  #       endpoint_name: ${{ format('taxi{0}', needs.get-config.outputs.oep) }}
-  #       endpoint_type: online
-  #       deployment_name: taxi-online-dp
-  #     secrets:
-  #       creds: ${{secrets.AZURE_CREDENTIALS}}
-#   allocate-traffic:
-#       uses: Azure/mlops-templates/.github/workflows/allocate-traffic.yml@main
-#       needs: [get-config]
-#       with:
-#         resource_group: ${{ needs.get-config.outputs.resource_group }}
-#         workspace_name: ${{ needs.get-config.outputs.aml_workspace }}
-#         traffic_allocation: taxi-online-dp=100
-#         endpoint_name: ${{ format('taxi{0}', needs.get-config.outputs.oep) }}
-#       secrets:
-#         creds: ${{secrets.AZURE_CREDENTIALS}}
+  update-deployment:
+      if: ${{ needs.get-endpoint.outputs.check_enpoint == needs.get-endpoint.outputs.name_enpoint }}
+      needs: [get-config, get-endpoint]
+      runs-on: ubuntu-latest
+      steps:
+      - name: "Az CLI login"
+        uses: azure/login@v1
+        with:
+          creds: ${{secrets.AZURE_CREDENTIALS}}
+          enable-AzPSSession: true
+      - name: install-extension
+        run: az extension add -n ml -y
+      - name: update-extension
+        run: az extension update -n ml
+      - id: get-ml-deployment
+        name: get-ml-deployment
+        run: |
+          az ml online-deployment update -n taxi-online-dp  --file mlops/azureml/deploy/online/online-endpoint.yml --resource-group ${{ needs.get-config.outputs.resource_group }} --workspace-name ${{ needs.get-config.outputs.aml_workspace }} --endpoint-name ${{ format('taxi{0}', needs.get-config.outputs.oep) }}
+  create-deployment:
+      if: ${{ needs.get-endpoint.outputs.check_enpoint != needs.get-endpoint.outputs.name_enpoint }}
+      needs: [get-config, get-endpoint]
+      uses: Azure/mlops-templates/.github/workflows/create-deployment.yml@main
+      with:
+        resource_group: ${{ needs.get-config.outputs.resource_group }}
+        workspace_name: ${{ needs.get-config.outputs.aml_workspace }}
+        endpoint_file: mlops/azureml/deploy/online/online-deployment.yml
+        endpoint_name: ${{ format('taxi{0}', needs.get-config.outputs.oep) }}
+        endpoint_type: online
+        deployment_name: taxi-online-dp
+      secrets:
+        creds: ${{secrets.AZURE_CREDENTIALS}}
+  allocate-traffic:
+      uses: Azure/mlops-templates/.github/workflows/allocate-traffic.yml@main
+      needs: [get-config]
+      with:
+        resource_group: ${{ needs.get-config.outputs.resource_group }}
+        workspace_name: ${{ needs.get-config.outputs.aml_workspace }}
+        traffic_allocation: taxi-online-dp=100
+        endpoint_name: ${{ format('taxi{0}', needs.get-config.outputs.oep) }}
+      secrets:
+        creds: ${{secrets.AZURE_CREDENTIALS}}
